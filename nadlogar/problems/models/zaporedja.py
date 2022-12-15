@@ -3,7 +3,8 @@ import random
 import sympy
 from django.db import models
 
-from .meta import Problem
+
+from .meta import Problem, GeneratedDataIncorrect
 
 
 def clen_aritmeticnega(a1, d, n):
@@ -122,4 +123,86 @@ class PrviCleniAritmeticnega(Problem):
             "a1": sympy.latex(a1),
             "d": sympy.latex(d),
             "splosni": sympy.latex(splosni),
+        }
+
+
+class SplosniClenAritmeticnegaZaporedja(Problem):
+    """Naloga za zapis splošnega člena aritmetičnega zaporedja, če poznaš dva člena zaporedja."""
+
+    default_instruction = "Določi splošni člen aritmetičnega zaporedja, če je $a_{@n1}=@an1$ in $a_{@n2}=@an2$."
+    default_solution = "$a_n=@a1+@d(n-1)$"
+
+    class Meta:
+        verbose_name = "Zaporedja / splošni člen aritmetičnega zaporedja"
+
+    od = models.IntegerField("Od", default=-5)
+    do = models.IntegerField("Do", default=5)
+
+    def generate(self):
+        seznam_polovick = [
+            sympy.Rational(x, 2) for x in range(2 * self.od, 2 * self.do + 1) if x != 0
+        ]
+        a1 = random.choice(seznam_polovick)
+        d = random.choice(seznam_polovick)
+        nn1 = random.randint(2, 10)
+        nn2 = random.randint(2, 15)
+        if nn1 == nn2:
+            raise GeneratedDataIncorrect
+        n1 = min(nn1, nn2)  # Zato da sta pri izpisu urejena po velikosti
+        n2 = max(nn1, nn2)
+        an1 = clen_aritmeticnega(a1, d, n1)
+        an2 = clen_aritmeticnega(a1, d, n2)
+        return {
+            "n1": sympy.latex(n1),
+            "an1": sympy.latex(an1),
+            "n2": sympy.latex(n2),
+            "an2": sympy.latex(an2),
+            "a1": sympy.latex(a1),
+            "d": sympy.latex(d),
+        }
+
+
+class SplosniClenAritmeticnegaEnacbi(Problem):
+    """Naloga za zapis splošnega člena aritmetičnega zaporedja, če imaš podani dve enačbi z različnimi členi zaporedja."""
+
+    default_instruction = r"""Določi prvi člen in diferenco artimetičnega zaporedja, pri katerem je 
+        $a_{@n1} + a_{ @n2 }=@vrednost1$ in 
+        $a_{ @n3 } @operator a_{ @n4 }=@vrednost2$."""
+    default_solution = "$a_1=@a1$, $d=@d$"
+
+    class Meta:
+        verbose_name = "Zaporedja / splošni člen aritmetičnega zaporedja iz enačb"
+
+    def generate(self):
+        a1 = random.choice(
+            [x for x in range(-8, 8) if x != 0]
+            + [-sympy.Rational(1, 2), sympy.Rational(1, 2)]
+        )
+        d = random.choice(
+            [x for x in range(-3, 3) if x != 0]
+            + [-sympy.Rational(1, 2), sympy.Rational(1, 2)]
+        )
+        [n1, n2, n3, n4] = random.sample(list(range(2, 20)), 4)
+        vrednost1 = clen_aritmeticnega(a1, d, n1) + clen_aritmeticnega(a1, d, n2)
+        operatorji = {
+            "+": lambda a, b: a + b,
+            "-": lambda a, b: a - b,
+            "\cdot": lambda a, b: a * b,
+        }
+
+        operator = random.choice(list(operatorji.keys()))
+        vrednost2 = operatorji[operator](
+            clen_aritmeticnega(a1, d, n3), clen_aritmeticnega(a1, d, n4)
+        )
+
+        return {
+            "n1": n1,
+            "n2": n2,
+            "n3": n3,
+            "n4": n4,
+            "operator": operator,
+            "vrednost1": vrednost1,
+            "vrednost2": vrednost2,
+            "a1": a1,
+            "d": d,
         }
