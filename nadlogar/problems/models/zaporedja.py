@@ -4,7 +4,7 @@ import sympy
 from django.db import models
 
 
-from .meta import Problem, GeneratedDataIncorrect
+from .meta import GeneratedDataIncorrect, Problem
 
 
 def clen_aritmeticnega(a1, d, n):
