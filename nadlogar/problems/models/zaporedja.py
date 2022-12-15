@@ -128,7 +128,6 @@ class PrviCleniAritmeticnega(Problem):
 
 class SplosniClenAritmeticnegaZaporedja(Problem):
     """Naloga za zapis splošnega člena aritmetičnega zaporedja, če poznaš dva člena zaporedja."""
-
     default_instruction = "Določi splošni člen aritmetičnega zaporedja, če je $a_{@n1}=@an1$ in $a_{@n2}=@an2$."
     default_solution = "$a_n=@a1+@d(n-1)$"
 
