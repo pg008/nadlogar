@@ -57,6 +57,16 @@ Potem ko uspešno napišete tak razred, poženite ukaza:
 
 `python manage.py migrate`
 
+### Pregled opravil za pretvarjanje [nalog](https://github.com/ursa16180/generiranje-nalog)
+- `class ImeNaloge(Naloga)` -> `class ImeNaloge(Problem)`
+- docstring -> ohrani samo prvo vrstico
+- dodaj `class Meta: verbose_name=...`
+- `besedilo_posamezne` -> `default_instruction`, popravi "{{latex(naloga.v)}}" -> "@v"
+- `resitev_posamezne` -> `default_solution`
+- `_poskusi_sestaviti(self)` -> `generate(self)`
+- `return {"a": a}` -> `return {"a": sympy.latex(a)}`
+
+
 ## Nekaj ne dela pravilno?!?
 
 V tem primeru vprašanje lahko zastavite na [Discord kanalu programerskega krožka FMF](https://discord.gg/259nUehq), kjer v podzavihku _Nadlogar_ potekajo glavni pogovori glede projekta.
